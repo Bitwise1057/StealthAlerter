@@ -1,0 +1,9 @@
+## Interface: 30200
+## Title: Stealth Alerter
+## Version: 0.99.1
+## Author: Suppression, Shu'halo, US
+## Notes: Stealth Alerter detects if someone uses a stealth ability.
+## X-Date: August 12, 2009
+## SavedVariablesPerCharacter: StealthAlerterEnabled, StealthAlerterDebug
+
+StealthAlerter.xml
