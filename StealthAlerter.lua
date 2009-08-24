@@ -1,3 +1,6 @@
+-- 
+-- Show the help.
+--
 local function ShowHelp()
    if StealthAlerterEnabled then
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter "..StealthAlerterVersion.." is on, type \"/sal off\" to turn it off.", 0.0, 0.85, 0.0);
@@ -6,6 +9,9 @@ local function ShowHelp()
    end
 end -- local function ShowHelp()
 
+--
+-- Handle slash commands.
+--
 function StealthAlerterCommand(command)
    local argc, argv = 0, {};
    gsub(command, "[^%s]+", function (word) argc=argc+1; argv[argc]=word; end);
@@ -16,12 +22,10 @@ function StealthAlerterCommand(command)
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter "..StealthAlerterVersion.." is off, type \"/sal on\" to turn it on.", 0.0, 0.85, 0.0);
       StealthAlerterEnabled = false;
       StealthAlerterFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-      StealthAlerterFrame:UnRegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
    elseif (argc == 1) and (argv[1] == "on") then
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter "..StealthAlerterVersion.." is on, type \"/sal off\" to turn it off.", 0.0, 0.85, 0.0);
       StealthAlerterEnabled = true;
       StealthAlerterFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-      StealthAlerterFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
    elseif (argc == 1) and (argv[1] == "debug") then
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter "..StealthAlerterVersion.." debug is on, type \"/sal undebug\" to turn debugging off.", 0.0, 0.85, 0.0);
       StealthAlerterDebug = true;
@@ -33,8 +37,11 @@ function StealthAlerterCommand(command)
    end
 end -- function StealthAlerterCommand()
 
+-- 
+-- Do stuff when the AddOn is loaded.
+--
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.2";   -- Version number.
+   StealthAlerterVersion = "0.99.3";   -- Version number.
 
    --
    -- Register a command handler.
@@ -52,11 +59,13 @@ function StealthAlerterOnLoad()
    end
 
    StealthAlerterFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-   StealthAlerterFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 
    return;
 end -- function StealthAlerterOnLoad()
 
+-- 
+-- Handle the events we've registered, print messages and do stuff.
+--
 function StealthAlerterOnEvent(event, ...)
    local timestamp, type, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellId, spellName = select(1, ...)
 
