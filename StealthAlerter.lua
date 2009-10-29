@@ -1,3 +1,21 @@
+local StealthAlerterMyEnemiesTable = nil;
+local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "Night Elf"};
+local StealthAlerterHordeTable = {"Blood Elf", "Orc", "Troll", "Tauren", "Undead"};
+
+--
+-- Search a table.
+--
+local function SearchTable(race, table)
+
+   for _, v in pairs(table) do
+      if (v == race) then 
+         return true;
+      end
+   end
+
+   return false;
+end -- local function SearchTable()
+
 -- 
 -- Show the help.
 --
@@ -41,7 +59,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the AddOn is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.3";   -- Version number.
+   StealthAlerterVersion = "0.99.4";   -- Version number.
 
    --
    -- Register a command handler.
@@ -56,6 +74,20 @@ function StealthAlerterOnLoad()
 
    if StealthAlerterDebug == nil then
       StealthAlerterDebug = false;
+   end
+  
+   --
+   -- Get our race.
+   --
+   local myRace, myFileName = UnitRace("player");
+
+   -- 
+   -- Set our ememies.
+   --
+   if SearchTable(myRace, StealthAlerterAllianceTable) then
+      StealthAlerterMyEnemiesTable = StealthAlerterHordeTable;
+   elseif SearchTable(myRace, StealthAlerterHorde) then
+      StealthAlerterMyEnemiesTable = StealthAlerterAllianceTable;
    end
 
    StealthAlerterFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
@@ -80,54 +112,124 @@ function StealthAlerterOnEvent(event, ...)
       --
       -- Enable for verbose logging.  Probably a bad idea.
       --
-      -- DEFAULT_CHAT_FRAME:AddMessage("".. spellId .." "..spellName.." " .. sourceName .. ".", 0.41, 0.8, 0.94);
+      -- DEFAULT_CHAT_FRAME:AddMessage(""..spellId.." "..spellName.." " ..sourceName.. ".", 0.41, 0.8, 0.94);
 
       --
       -- Detect Rogues casting Vanish.
       --
       if spellId == 1856 then 
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish rank 1.", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish rank 1 (10 seconds).", 1.0, 0.25, 0.25);
+	 else
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish rank 1 (10 seconds).", 0.41, 0.8, 0.94);
+	 end
       elseif spellId == 1857 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish rank 2.", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish rank 2 (10 seconds).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish rank 2 (10 seconds).", 0.41, 0.8, 0.94);
+	 end
       elseif spellId == 26889 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish rank 3.", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish rank 3 (10 seconds).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish rank 3 (10 seconds).", 0.41, 0.8, 0.94);
+	 end
       --
       -- Detect Rogues casting Stealth.
       --
       elseif spellId == 1784 then 
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 1 (speed reduced by 50%).", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 1 (speed reduced by 50%).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 1 (speed reduced by 50%).", 0.41, 0.8, 0.94);
+	 end
       elseif spellId == 1785 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 2 (speed reduced by 40%).", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 2 (speed reduced by 40%).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 2 (speed reduced by 40%).", 0.41, 0.8, 0.94);
+	 end
       elseif spellId == 1786 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 3 (speed reduced by 35%).", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 3 (speed reduced by 35%).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 3 (speed reduced by 35%).", 0.41, 0.8, 0.94);
+	 end
       elseif spellId == 1787 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 4 (speed reduced by 30%).", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 4 (speed reduced by 30%).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 4 (speed reduced by 30%).", 0.41, 0.8, 0.94);
+	 end
       --
       -- Detect Druids casting Prowl.
       --
       elseif spellId == 5215 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 1 (speed reduced by 40%).", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 1 (speed reduced by 40%).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 1 (speed reduced by 40%).", 0.41, 0.8, 0.94);
+	 end
       elseif spellId == 6783 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 2 (speed reduced by 35%).", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 2 (speed reduced by 35%).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 2 (speed reduced by 35%).", 0.41, 0.8, 0.94);
+	 end
       elseif spellId == 9913 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 3 (speed reduced by 30%).", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 3 (speed reduced by 30%).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 3 (speed reduced by 30%).", 0.41, 0.8, 0.94);
+	 end
       --
       -- Detect Night Elves casting Shadowmeld.
       --
       elseif spellId == 58984 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Shadowmeld.", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Shadowmeld.", 1.0, 0.25, 0.25);
+	 else
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Shadowmeld.", 0.41, 0.8, 0.94);
+	 end
       --
       -- Detect Mages casting Invisibility.
       --
       elseif spellId == 66 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility.", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility.", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility.", 0.41, 0.8, 0.94);
+	 end
       --
       -- Detect Invisibility potions.
       --
       elseif spellId == 3680 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Lesser Invisibility Potion (15 seconds).", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Lesser Invisibility Potion (15 seconds).", 1.0, 0.25, 0.25);
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Lesser Invisibility Potion (15 seconds).", 0.41, 0.8, 0.94);
+	 end
       elseif spellId == 11392 then
-         DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used an Invisibility Potion (18 seconds).", 0.41, 0.8, 0.94);
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used an Invisibility Potion (18 seconds).", 1.0, 0.25, 0.25); 
+         else 
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used an Invisibility Potion (18 seconds).", 0.41, 0.8, 0.94);
+	 end
       end
    end
 end -- function StealthAlerterOnEvent()
