@@ -59,7 +59,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the AddOn is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.4";   -- Version number.
+   StealthAlerterVersion = "0.99.5";   -- Version number.
 
    --
    -- Register a command handler.
@@ -86,7 +86,7 @@ function StealthAlerterOnLoad()
    --
    if SearchTable(myRace, StealthAlerterAllianceTable) then
       StealthAlerterMyEnemiesTable = StealthAlerterHordeTable;
-   elseif SearchTable(myRace, StealthAlerterHorde) then
+   elseif SearchTable(myRace, StealthAlerterHordeTable) then
       StealthAlerterMyEnemiesTable = StealthAlerterAllianceTable;
    end
 
