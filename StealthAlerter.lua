@@ -59,7 +59,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the AddOn is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.5";   -- Version number.
+   StealthAlerterVersion = "0.99.6";   -- Version number.
 
    --
    -- Register a command handler.
@@ -209,9 +209,9 @@ function StealthAlerterOnEvent(event, ...)
       elseif spellId == 66 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
 	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility.", 1.0, 0.25, 0.25);
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility (20 seconds).", 1.0, 0.25, 0.25);
          else 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility.", 0.41, 0.8, 0.94);
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility (20 seconds).", 0.41, 0.8, 0.94);
 	 end
       --
       -- Detect Invisibility potions.
