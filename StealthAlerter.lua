@@ -59,7 +59,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the AddOn is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.6";   -- Version number.
+   StealthAlerterVersion = "0.99.7";   -- Version number.
 
    --
    -- Register a command handler.
@@ -144,30 +144,9 @@ function StealthAlerterOnEvent(event, ...)
       elseif spellId == 1784 then 
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
 	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 1 (speed reduced by 50%).", 1.0, 0.25, 0.25);
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth (speed reduced by 30%).", 1.0, 0.25, 0.25);
          else 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 1 (speed reduced by 50%).", 0.41, 0.8, 0.94);
-	 end
-      elseif spellId == 1785 then
-         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 2 (speed reduced by 40%).", 1.0, 0.25, 0.25);
-         else 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 2 (speed reduced by 40%).", 0.41, 0.8, 0.94);
-	 end
-      elseif spellId == 1786 then
-         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 3 (speed reduced by 35%).", 1.0, 0.25, 0.25);
-         else 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 3 (speed reduced by 35%).", 0.41, 0.8, 0.94);
-	 end
-      elseif spellId == 1787 then
-         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 4 (speed reduced by 30%).", 1.0, 0.25, 0.25);
-         else 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth rank 4 (speed reduced by 30%).", 0.41, 0.8, 0.94);
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth (speed reduced by 30%).", 0.41, 0.8, 0.94);
 	 end
       --
       -- Detect Druids casting Prowl.
@@ -175,23 +154,9 @@ function StealthAlerterOnEvent(event, ...)
       elseif spellId == 5215 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
 	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 1 (speed reduced by 40%).", 1.0, 0.25, 0.25);
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl (speed reduced by 30%).", 1.0, 0.25, 0.25);
          else 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 1 (speed reduced by 40%).", 0.41, 0.8, 0.94);
-	 end
-      elseif spellId == 6783 then
-         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 2 (speed reduced by 35%).", 1.0, 0.25, 0.25);
-         else 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 2 (speed reduced by 35%).", 0.41, 0.8, 0.94);
-	 end
-      elseif spellId == 9913 then
-         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 3 (speed reduced by 30%).", 1.0, 0.25, 0.25);
-         else 
-            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl rank 3 (speed reduced by 30%).", 0.41, 0.8, 0.94);
+            DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl (speed reduced by 30%).", 0.41, 0.8, 0.94);
 	 end
       --
       -- Detect Night Elves casting Shadowmeld.
