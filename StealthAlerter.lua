@@ -1,6 +1,6 @@
 local StealthAlerterMyEnemiesTable = nil;
-local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "Night Elf"};
-local StealthAlerterHordeTable = {"Blood Elf", "Orc", "Troll", "Tauren", "Undead"};
+local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "Night Elf", "Worgen"};
+local StealthAlerterHordeTable = {"Blood Elf", "Orc", "Troll", "Tauren", "Undead", "Goblin"}; 
 
 --
 -- Search a table.
@@ -81,7 +81,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the AddOn is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.9";   -- Version number.
+   StealthAlerterVersion = "0.99.10";   -- Version number.
 
    --
    -- Register a command handler.
@@ -157,7 +157,7 @@ function StealthAlerterOnEvent(event, ...)
             else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Vanish (3 seconds).", 1.0, 0.25, 0.25);
 	    end
-	 elseif StealthAlerterShowFriendly then
+	 elseif race ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish.", 0.41, 0.8, 0.94);
             else
@@ -175,7 +175,7 @@ function StealthAlerterOnEvent(event, ...)
 	    else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Stealth (speed reduced by 30%).", 1.0, 0.25, 0.25);
             end
-	 elseif StealthAlerterShowFriendly then
+	 elseif race ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth.", 0.41, 0.8, 0.94);
 	    else
@@ -193,7 +193,7 @@ function StealthAlerterOnEvent(event, ...)
             else
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Prowl (speed reduced by 30%).", 1.0, 0.25, 0.25);
 	    end
-	 elseif StealthAlerterShowFriendly then
+	 elseif race ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl.", 0.41, 0.8, 0.94);
 	    else
@@ -211,11 +211,29 @@ function StealthAlerterOnEvent(event, ...)
             else
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Shadowmeld.", 1.0, 0.25, 0.25);
 	    end
-	 elseif StealthAlerterShowFriendly then
+	 elseif race ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Shadowmeld.", 0.41, 0.8, 0.94);
             else
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Shadowmeld.", 0.41, 0.8, 0.94);
+	    end
+	 end
+      --
+      -- Detect Hunters casting Camouflage.
+      --
+      elseif spellId == 51753 then
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+	 if race ~= nil and SearchTable(race, StealthAlerterMyEnemiesTable) then 
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Camouflage.", 1.0, 0.25, 0.25);
+            else
+	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Camouflage (60 seconds).", 1.0, 0.25, 0.25);
+	    end
+	 elseif race ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Camouflage.", 0.41, 0.8, 0.94);
+            else
+	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Camouflage (60 seconds).", 0.41, 0.8, 0.94);
 	    end
 	 end
       --
@@ -229,7 +247,7 @@ function StealthAlerterOnEvent(event, ...)
             else
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Invisibility (20 seconds).", 1.0, 0.25, 0.25);
 	    end
-	 elseif StealthAlerterShowFriendly then
+	 elseif race ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility.", 0.41, 0.8, 0.94);
             else
@@ -247,7 +265,7 @@ function StealthAlerterOnEvent(event, ...)
 	    else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Lesser Invisibility Potion (15 seconds).", 1.0, 0.25, 0.25);
 	    end
-	 elseif StealthAlerterShowFriendly then
+	 elseif race ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Lesser Invisibility Potion.", 0.41, 0.8, 0.94);
             else
@@ -262,7 +280,7 @@ function StealthAlerterOnEvent(event, ...)
 	    else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used an Invisibility Potion (18 seconds).", 1.0, 0.25, 0.25);
 	    end
-	 elseif StealthAlerterShowFriendly then
+	 elseif race ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used an Invisibility Potion.", 0.41, 0.8, 0.94);
 	    else
