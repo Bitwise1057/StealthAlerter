@@ -81,7 +81,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the AddOn is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.10";   -- Version number.
+   StealthAlerterVersion = "0.99.11";   -- Version number.
 
    --
    -- Register a command handler.
@@ -114,7 +114,7 @@ function StealthAlerterOnLoad()
    local myRace, myFileName = UnitRace("player");
 
    -- 
-   -- Set our ememies.
+   -- Set our enemies.
    --
    if SearchTable(myRace, StealthAlerterAllianceTable) then
       StealthAlerterMyEnemiesTable = StealthAlerterHordeTable;
@@ -131,7 +131,7 @@ end -- function StealthAlerterOnLoad()
 -- Handle the events we've registered, print messages and do stuff.
 --
 function StealthAlerterOnEvent(event, ...)
-   local timestamp, type, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellId, spellName = select(1, ...)
+   local timeStamp, type, hideCaster, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellId, spellName = select(1, ...)
 
    if StealthAlerterEnabled == false then
       return;
@@ -173,13 +173,13 @@ function StealthAlerterOnEvent(event, ...)
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth.", 1.0, 0.25, 0.25);
 	    else
-               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Stealth (speed reduced by 30%).", 1.0, 0.25, 0.25);
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Stealth.", 1.0, 0.25, 0.25);
             end
 	 elseif race ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth.", 0.41, 0.8, 0.94);
 	    else
-               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Stealth (speed reduced by 30%).", 0.41, 0.8, 0.94);
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Stealth.", 0.41, 0.8, 0.94);
 	    end
 	 end
       --
