@@ -81,7 +81,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the AddOn is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.11";   -- Version number.
+   StealthAlerterVersion = "0.99.12";   -- Version number.
 
    --
    -- Register a command handler.
@@ -131,7 +131,7 @@ end -- function StealthAlerterOnLoad()
 -- Handle the events we've registered, print messages and do stuff.
 --
 function StealthAlerterOnEvent(event, ...)
-   local timeStamp, type, hideCaster, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellId, spellName = select(1, ...)
+   local timestamp, type, hideCaster, sourceGUID, sourceName, sourceFlags, mysteryArgument, destGUID, destName, destFlags, anotherMysteryArgument, spellId, SpellName = select(1, ...)
 
    if StealthAlerterEnabled == false then
       return;

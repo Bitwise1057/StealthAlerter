@@ -1,9 +1,9 @@
-## Interface: 40100
+## Interface: 40200
 ## Title: Stealth Alerter
-## Version: 0.99.11
+## Version: 0.99.12
 ## Author: Suppression
 ## Notes: Stealth Alerter detects if someone uses a stealth ability.
-## X-Date: May 7, 2011
+## X-Date: June 30, 2011
 ## SavedVariablesPerCharacter: StealthAlerterEnabled, StealthAlerterDebug, StealthAlerterShowFriendly, StealthAlerterTerse
 
 StealthAlerter.xml
