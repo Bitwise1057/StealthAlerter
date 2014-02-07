@@ -1,6 +1,6 @@
 local StealthAlerterMyEnemiesTable = nil;
-local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "Night Elf", "Worgen"};
-local StealthAlerterHordeTable = {"Blood Elf", "Orc", "Troll", "Tauren", "Undead", "Goblin"}; 
+local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "Night Elf", "Worgen", "Pandaren"};
+local StealthAlerterHordeTable = {"Blood Elf", "Orc", "Troll", "Tauren", "Undead", "Goblin", "Pandaren"}; 
 
 --
 -- Search a table.
@@ -81,7 +81,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the AddOn is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.13";   -- Version number.
+   StealthAlerterVersion = "0.99.14 (February 6, 2014)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -107,20 +107,21 @@ function StealthAlerterOnLoad()
    end
 
    --
-   -- Get our race.
+   -- Get our faction.
    --
-   -- myFileName is not used.
+   -- factionGroup is the non-localized (English) faction name of the faction ('Horde', 'Alliance', or 'Neutral').
+   -- factionName is the localized name of the faction (not used).
    --
-   local myRace, myFileName = UnitRace("player");
+   local myFactionGroup, myFactionName = UnitFactionGroup("player");
 
    -- 
    -- Set our enemies.
    --
-   if SearchTable(myRace, StealthAlerterAllianceTable) then
-      StealthAlerterMyEnemiesTable = StealthAlerterHordeTable;
-   elseif SearchTable(myRace, StealthAlerterHordeTable) then
+   if myFactionGroup == "Horde" then
       StealthAlerterMyEnemiesTable = StealthAlerterAllianceTable;
-   end
+   else
+      StealthAlerterMyEnemiesTable = StealthAlerterHordeTable;
+   end 
 
    StealthAlerterFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 
@@ -131,7 +132,7 @@ end -- function StealthAlerterOnLoad()
 -- Handle the events we've registered, print messages and do stuff.
 --
 function StealthAlerterOnEvent(event, ...)
-   local timestamp, type, hideCaster, sourceGUID, sourceName, sourceFlags, mysteryArgument, destGUID, destName, destFlags, anotherMysteryArgument, spellId, SpellName = select(1, ...)
+   local timestamp, type, hideCaster, sourceGUID, sourceName, sourceFlags, mysteryArgument, destGUID, destName, destFlags, anotherMysteryArgument, spellId, spellName = select(1, ...)
 
    if StealthAlerterEnabled == false then
       return;
@@ -144,7 +145,7 @@ function StealthAlerterOnEvent(event, ...)
       --
       -- Enable for verbose logging.  Probably a bad idea.
       --
-      -- DEFAULT_CHAT_FRAME:AddMessage(""..spellId.." "..spellName.." " ..sourceName.. ".", 0.41, 0.8, 0.94);
+      -- DEFAULT_CHAT_FRAME:AddMessage(""..spellId.." "..spellName.." "..sourceGUID.." "..sourceName..".", 0.41, 0.8, 0.94);
 
       --
       -- Detect Rogues casting Vanish.
