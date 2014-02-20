@@ -1,6 +1,6 @@
 local StealthAlerterMyEnemiesTable = nil;
-local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "Night Elf", "Worgen", "Pandaren"};
-local StealthAlerterHordeTable = {"Blood Elf", "Orc", "Troll", "Tauren", "Undead", "Goblin", "Pandaren"}; 
+local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "NightElf", "Worgen", "Pandaren"};
+local StealthAlerterHordeTable = {"BloodElf", "Orc", "Troll", "Tauren", "Undead", "Goblin", "Pandaren"}; 
 
 --
 -- Search a table.
@@ -88,7 +88,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.15 (February 7, 2014)";   -- Version number.
+   StealthAlerterVersion = "0.99.16 (February 17, 2014)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -129,6 +129,8 @@ function StealthAlerterOnLoad()
    else
       StealthAlerterMyEnemiesTable = StealthAlerterHordeTable;
    end 
+
+   -- print("myFactionGroup ", myFactionGroup, " Enemies ", StealthAlerterMyEnemiesTable, " Horde ", StealthAlerterHordeTable, " Alliance ", StealthAlerterAllianceTable);
 
    StealthAlerterFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 
