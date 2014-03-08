@@ -3,6 +3,43 @@ local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "Nigh
 local StealthAlerterHordeTable = {"BloodElf", "Orc", "Troll", "Tauren", "Undead", "Goblin", "Pandaren"}; 
 
 --
+-- Create a frame.
+--
+local f = CreateFrame("Frame", "salFrame", UIParent);
+f:SetAllPoints(true);
+f:SetAlpha(0);
+f:SetToplevel(true);
+f:SetFrameStrata("BACKGROUND");
+f:EnableMouse(false);
+--f:Hide();  -- The examples I found hide the frame, but it doesn't work for me.  Shrug.
+
+--
+-- Set frame texture.
+--
+local t = f:CreateTexture(nil,"BACKGROUND");
+t:SetAllPoints(true);
+t:SetBlendMode("ADD");
+t:SetTexture("Interface\\FullScreenTextures\\LowHealth");  -- A builtin red texture.
+--t:SetTexture("Interface\\FullScreenTextures\\OutofControl");  -- A builtin blue texture.
+f.texture = t;
+
+--
+-- Make it flash.
+-- http://forums.wowace.com/showthread.php?t=20397
+--
+local flasher = f:CreateAnimationGroup();
+
+local fade1 = flasher:CreateAnimation("Alpha");
+fade1:SetDuration(0.3);
+fade1:SetChange(1);
+fade1:SetOrder(1);
+
+local fade2 = flasher:CreateAnimation("Alpha");
+fade2:SetDuration(0.3);
+fade2:SetChange(-1);
+fade2:SetOrder(2);
+
+--
 -- Search a table.
 --
 local function SearchTable(race, table)
@@ -38,6 +75,11 @@ local function ShowHelp()
          DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will print terse messages, type \"/sal noterse\" for more detail.", 0.0, 0.85, 0.0);
       else
          DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will print detailed messages, type \"/sal terse\" for less detail.", 0.0, 0.85, 0.0);
+      end
+      if StealthAlerterFlash == true then
+         DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will flash the screen for hostile actions, type \"/sal noflash\" to turn it off.", 0.0, 0.85, 0.0);
+      else
+         DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will not flash the screen for hostile actions, type \"/sal flash\" to turn it on.", 0.0, 0.85, 0.0);
       end
    else
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter "..StealthAlerterVersion.." is off, type \"/sal on\" to turn it on.", 0.0, 0.85, 0.0);
@@ -79,6 +121,12 @@ function StealthAlerterCommand(command)
    elseif (argc == 1) and (argv[1] == "noterse") then
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will print detailed messages, type \"/sal terse\" for less detail.", 0.0, 0.85, 0.0);
       StealthAlerterTerse = false;
+   elseif (argc == 1) and (argv[1] == "flash") then
+      DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will flash the screen for hostile actions, type \"/sal noflash\" to turn it off.", 0.0, 0.85, 0.0);
+      StealthAlerterFlash = true;
+   elseif (argc == 1) and (argv[1] == "noflash") then
+      DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will not flash the screen for hostile actions, type \"/sal flash\" to turn it on.", 0.0, 0.85, 0.0);
+      StealthAlerterFlash = false;
    else
       ShowHelp();
    end
@@ -88,7 +136,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.16 (February 17, 2014)";   -- Version number.
+   StealthAlerterVersion = "0.99.17 (March 7, 2014)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -111,6 +159,10 @@ function StealthAlerterOnLoad()
 
    if StealthAlerterTerse == nil then
       StealthAlerterTerse = false;
+   end
+
+   if StealthAlerterFlash == nil then
+      StealthAlerterFlash = true;
    end
 
    --
@@ -173,6 +225,9 @@ function StealthAlerterOnEvent(event, ...)
             else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Vanish (3 seconds).", 0.41, 0.8, 0.94);
 	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
 	 end
       --
       -- Detect Rogues casting Stealth.
@@ -184,6 +239,9 @@ function StealthAlerterOnEvent(event, ...)
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth.", 1.0, 0.25, 0.25);
 	    else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Stealth.", 1.0, 0.25, 0.25);
+            end
+            if StealthAlerterFlash then
+               flasher:Play(); 
             end
 	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -203,6 +261,9 @@ function StealthAlerterOnEvent(event, ...)
             else
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Prowl (speed reduced by 30%).", 1.0, 0.25, 0.25);
 	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
 	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl.", 0.41, 0.8, 0.94);
@@ -221,6 +282,9 @@ function StealthAlerterOnEvent(event, ...)
             else
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Shadowmeld.", 1.0, 0.25, 0.25);
 	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
 	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Shadowmeld.", 0.41, 0.8, 0.94);
@@ -239,6 +303,9 @@ function StealthAlerterOnEvent(event, ...)
             else
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Camouflage (60 seconds).", 1.0, 0.25, 0.25);
 	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
 	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Camouflage.", 0.41, 0.8, 0.94);
@@ -257,6 +324,9 @@ function StealthAlerterOnEvent(event, ...)
             else
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Invisibility (20 seconds).", 1.0, 0.25, 0.25);
 	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
 	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility.", 0.41, 0.8, 0.94);
@@ -275,6 +345,9 @@ function StealthAlerterOnEvent(event, ...)
 	    else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Lesser Invisibility Potion (15 seconds).", 1.0, 0.25, 0.25);
 	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
 	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Lesser Invisibility Potion.", 0.41, 0.8, 0.94);
@@ -290,6 +363,9 @@ function StealthAlerterOnEvent(event, ...)
 	    else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used an Invisibility Potion (18 seconds).", 1.0, 0.25, 0.25);
 	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
 	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used an Invisibility Potion.", 0.41, 0.8, 0.94);
