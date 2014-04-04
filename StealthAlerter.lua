@@ -136,7 +136,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.17 (March 7, 2014)";   -- Version number.
+   StealthAlerterVersion = "0.99.18 (April 2, 2014)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -219,15 +219,15 @@ function StealthAlerterOnEvent(event, ...)
             else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Vanish (3 seconds).", 1.0, 0.25, 0.25);
 	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
 	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish.", 0.41, 0.8, 0.94);
             else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Vanish (3 seconds).", 0.41, 0.8, 0.94);
 	    end
-            if StealthAlerterFlash then
-               flasher:Play(); 
-            end
 	 end
       --
       -- Detect Rogues casting Stealth.
