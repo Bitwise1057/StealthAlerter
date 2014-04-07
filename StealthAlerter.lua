@@ -1,9 +1,69 @@
-local StealthAlerterMyEnemiesTable = nil;
-local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "NightElf", "Worgen", "Pandaren"};
-local StealthAlerterHordeTable = {"BloodElf", "Orc", "Troll", "Tauren", "Undead", "Goblin", "Pandaren"}; 
+--
+-- Faction tooltip stuff.  Thanks to Achievement Sounds AddOn by Billtopia.
+--
+local StealthAlerterHostileGUIDCache = {};
+local StealthAlerterTooltip = CreateFrame("GameTooltip", "StealthAlerterTooltip", UIParent, "GameTooltipTemplate");
+StealthAlerterTooltip:SetOwner(WorldFrame, "ANCHOR_NONE");
 
 --
--- Create a frame.
+-- Check faction by GUID, and set to true if hostile, false if friendly.
+--
+local function CheckFactionByGUID(GUID)
+
+   if not (GUID) then
+      return nil;
+   end
+
+   --
+   -- Check cache.
+   --
+   if StealthAlerterHostileGUIDCache[GUID] ~= nil then
+      if StealthAlerterDebug then
+         DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter cache hit "..GUID..".", 0.0, 0.85, 0.0);
+      end
+      return StealthAlerterHostileGUIDCache[GUID];
+   end
+
+   if StealthAlerterDebug then
+      DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter faction lookup "..GUID..".", 0.0, 0.85, 0.0);
+   end
+
+   --
+   -- Get info from tool tip.
+   --
+   StealthAlerterTooltip:ClearLines();
+   StealthAlerterTooltip:SetHyperlink('unit:'..GUID);
+   local tipName, numLines = "StealthAlerterTooltipTextLeft", _G["StealthAlerterTooltip"]:NumLines();
+
+   if numLine == 0 then
+      if StealthAlerterDebug then
+         DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter tool tip NumLines() returned 0 "..GUID..".", 0.0, 0.85, 0.0);
+      end
+      return(nil);
+   end
+
+   local faction = _G[tipName..tostring(numLines)]:GetText() == PVP and _G[tipName..tostring(numLines-1)]:GetText() or _G[tipName..tostring(numLines)]:GetText();
+
+   --
+   -- Figure out faction.
+   --
+   if (faction ~= "Alliance") and (faction ~= "Horde") then
+      if StealthAlerterDebug then
+         DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter couldn't determine faction from GUID "..GUID..".", 0.0, 0.85, 0.0);
+      end
+      return(nil);
+   elseif faction == StealthAlerterMyFactionGroup then
+      StealthAlerterHostileGUIDCache[GUID] = false;
+      return StealthAlerterHostileGUIDCache[GUID];
+   else
+      StealthAlerterHostileGUIDCache[GUID] = true;
+      return StealthAlerterHostileGUIDCache[GUID];
+   end
+
+end -- local function CheckFactionByGUID
+
+--
+-- Create a frame for flashing.
 --
 local f = CreateFrame("Frame", "salFrame", UIParent);
 f:SetAllPoints(true);
@@ -38,27 +98,6 @@ local fade2 = flasher:CreateAnimation("Alpha");
 fade2:SetDuration(0.3);
 fade2:SetChange(-1);
 fade2:SetOrder(2);
-
---
--- Search a table.
---
-local function SearchTable(race, table)
-
-   ---
-   --- Error trap for bad things that may happen (thanks Maroot).
-   ---
-   if ((not table) or (type(table) ~= "table")) then 
-      return false; 
-   end
-
-   for _, v in pairs(table) do
-      if (v == race) then 
-         return true;
-      end
-   end
-
-   return false;
-end -- local function SearchTable()
 
 -- 
 -- Show the help.
@@ -136,7 +175,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.18 (April 2, 2014)";   -- Version number.
+   StealthAlerterVersion = "0.99.19 (April 6, 2014)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -171,18 +210,7 @@ function StealthAlerterOnLoad()
    -- factionGroup is the non-localized (English) faction name of the faction ('Horde', 'Alliance', or 'Neutral').
    -- factionName is the localized name of the faction - not used.
    --
-   local myFactionGroup, myFactionName = UnitFactionGroup("player");
-
-   -- 
-   -- Set our enemies.
-   --
-   if myFactionGroup == "Horde" then
-      StealthAlerterMyEnemiesTable = StealthAlerterAllianceTable;
-   else
-      StealthAlerterMyEnemiesTable = StealthAlerterHordeTable;
-   end 
-
-   -- print("myFactionGroup ", myFactionGroup, " Enemies ", StealthAlerterMyEnemiesTable, " Horde ", StealthAlerterHordeTable, " Alliance ", StealthAlerterAllianceTable);
+   StealthAlerterMyFactionGroup, StealthAlerterMyFactionName = UnitFactionGroup("player");
 
    StealthAlerterFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 
@@ -213,7 +241,9 @@ function StealthAlerterOnEvent(event, ...)
       --
       if spellId == 1856 then 
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if raceFilename ~= nil and SearchTable(raceFilename, StealthAlerterMyEnemiesTable) then
+         local IsHostile = CheckFactionByGUID(sourceGUID);
+
+	 if IsHostile ~= nil and IsHostile then 
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish.", 1.0, 0.25, 0.25);
             else
@@ -222,7 +252,7 @@ function StealthAlerterOnEvent(event, ...)
             if StealthAlerterFlash then
                flasher:Play(); 
             end
-	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Vanish.", 0.41, 0.8, 0.94);
             else
@@ -234,7 +264,9 @@ function StealthAlerterOnEvent(event, ...)
       --
       elseif spellId == 1784 then 
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if raceFilename ~= nil and SearchTable(raceFilename, StealthAlerterMyEnemiesTable) then 
+         local IsHostile = CheckFactionByGUID(sourceGUID);
+
+	 if IsHostile ~= nil and IsHostile then 
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth.", 1.0, 0.25, 0.25);
 	    else
@@ -243,7 +275,7 @@ function StealthAlerterOnEvent(event, ...)
             if StealthAlerterFlash then
                flasher:Play(); 
             end
-	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Stealth.", 0.41, 0.8, 0.94);
 	    else
@@ -251,11 +283,36 @@ function StealthAlerterOnEvent(event, ...)
 	    end
 	 end
       --
+      -- Detect Rogues casting Shroud of Concealment.
+      --
+      elseif spellId == 114018 then 
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+         local IsHostile = CheckFactionByGUID(sourceGUID);
+
+	 if IsHostile ~= nil and IsHostile then 
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Shroud of Concealment.", 1.0, 0.25, 0.25);
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Shroud of Concealment (15 seconds).", 1.0, 0.25, 0.25);
+            end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Shroud of Concealment.", 0.41, 0.8, 0.94);
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Shroud of Concealment (15 seconds).", 0.41, 0.8, 0.94);
+	    end
+	 end
+      --
       -- Detect Druids casting Prowl.
       --
       elseif spellId == 5215 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if raceFilename ~= nil and SearchTable(raceFilename, StealthAlerterMyEnemiesTable) then 
+         local IsHostile = CheckFactionByGUID(sourceGUID);
+
+	 if IsHostile ~= nil and IsHostile then 
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl.", 1.0, 0.25, 0.25);
             else
@@ -264,7 +321,7 @@ function StealthAlerterOnEvent(event, ...)
             if StealthAlerterFlash then
                flasher:Play(); 
             end
-	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl.", 0.41, 0.8, 0.94);
 	    else
@@ -276,7 +333,9 @@ function StealthAlerterOnEvent(event, ...)
       --
       elseif spellId == 58984 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if raceFilename ~= nil and SearchTable(raceFilename, StealthAlerterMyEnemiesTable) then 
+         local IsHostile = CheckFactionByGUID(sourceGUID);
+
+	 if IsHostile ~= nil and IsHostile then 
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Shadowmeld.", 1.0, 0.25, 0.25);
             else
@@ -285,7 +344,7 @@ function StealthAlerterOnEvent(event, ...)
             if StealthAlerterFlash then
                flasher:Play(); 
             end
-	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Shadowmeld.", 0.41, 0.8, 0.94);
             else
@@ -297,7 +356,9 @@ function StealthAlerterOnEvent(event, ...)
       --
       elseif spellId == 51753 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if raceFilename ~= nil and SearchTable(raceFilename, StealthAlerterMyEnemiesTable) then 
+         local IsHostile = CheckFactionByGUID(sourceGUID);
+
+	 if IsHostile ~= nil and IsHostile then 
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Camouflage.", 1.0, 0.25, 0.25);
             else
@@ -306,7 +367,7 @@ function StealthAlerterOnEvent(event, ...)
             if StealthAlerterFlash then
                flasher:Play(); 
             end
-	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Camouflage.", 0.41, 0.8, 0.94);
             else
@@ -318,7 +379,9 @@ function StealthAlerterOnEvent(event, ...)
       --
       elseif spellId == 66 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if raceFilename ~= nil and SearchTable(raceFilename, StealthAlerterMyEnemiesTable) then 
+         local IsHostile = CheckFactionByGUID(sourceGUID);
+
+	 if IsHostile ~= nil and IsHostile then 
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility.", 1.0, 0.25, 0.25);
             else
@@ -327,7 +390,7 @@ function StealthAlerterOnEvent(event, ...)
             if StealthAlerterFlash then
                flasher:Play(); 
             end
-	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Invisibility.", 0.41, 0.8, 0.94);
             else
@@ -339,7 +402,9 @@ function StealthAlerterOnEvent(event, ...)
       --
       elseif spellId == 3680 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if raceFilename ~= nil and SearchTable(raceFilename, StealthAlerterMyEnemiesTable) then 
+         local IsHostile = CheckFactionByGUID(sourceGUID);
+
+	 if IsHostile ~= nil and IsHostile then 
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Lesser Invisibility Potion.", 1.0, 0.25, 0.25);
 	    else
@@ -348,7 +413,7 @@ function StealthAlerterOnEvent(event, ...)
             if StealthAlerterFlash then
                flasher:Play(); 
             end
-	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Lesser Invisibility Potion.", 0.41, 0.8, 0.94);
             else
@@ -357,7 +422,9 @@ function StealthAlerterOnEvent(event, ...)
 	 end
       elseif spellId == 11392 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-	 if raceFilename ~= nil and SearchTable(raceFilename, StealthAlerterMyEnemiesTable) then 
+         local IsHostile = CheckFactionByGUID(sourceGUID);
+
+	 if IsHostile ~= nil and IsHostile then 
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used an Invisibility Potion.", 1.0, 0.25, 0.25); 
 	    else
@@ -366,7 +433,7 @@ function StealthAlerterOnEvent(event, ...)
             if StealthAlerterFlash then
                flasher:Play(); 
             end
-	 elseif raceFilename ~= nil and StealthAlerterShowFriendly then
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used an Invisibility Potion.", 0.41, 0.8, 0.94);
 	    else
