@@ -214,7 +214,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.21 (October 18, 2014)";   -- Version number.
+   StealthAlerterVersion = "0.99.22 (March 15, 2015)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -466,6 +466,29 @@ function StealthAlerterOnEvent(event, ...)
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Greater Invisibility.", 0.41, 0.8, 0.94);
             else
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Greater Invisibility (20 seconds).", 0.41, 0.8, 0.94);
+	    end
+	 end
+      --
+      -- Detect Stealthman 54 devices.
+      --
+      elseif spellId == 156136 then
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+         local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
+
+	 if IsHostile ~= nil and IsHostile then 
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." used a Stealthman 54 device.", 1.0, 0.25, 0.25);
+            else
+	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") used a Stealthman 54 device.", 1.0, 0.25, 0.25);
+	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." used a Stealthman 54 device.", 0.41, 0.8, 0.94);
+            else
+	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") used a Stealthman 54 device.", 0.41, 0.8, 0.94);
 	    end
 	 end
       --
