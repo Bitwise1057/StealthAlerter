@@ -214,7 +214,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.23 (July 1, 2015)";   -- Version number.
+   StealthAlerterVersion = "0.99.24 (September 7, 2015)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -532,6 +532,26 @@ function StealthAlerterOnEvent(event, ...)
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used an Invisibility Potion.", 0.41, 0.8, 0.94);
 	    else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used an Invisibility Potion (18 seconds).", 0.41, 0.8, 0.94);
+	    end
+	 end
+      elseif spellId == 175833 then
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+         local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
+
+	 if IsHostile ~= nil and IsHostile then 
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Draenic Invisibility Potion.", 1.0, 0.25, 0.25); 
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Draenic Invisibility Potion (18 seconds).", 1.0, 0.25, 0.25);
+	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Draenic Invisibility Potion.", 0.41, 0.8, 0.94);
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Draenic Invisibility Potion (18 seconds).", 0.41, 0.8, 0.94);
 	    end
 	 end
       end
