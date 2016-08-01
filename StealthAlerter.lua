@@ -130,12 +130,12 @@ local flasher = f:CreateAnimationGroup();
 
 local fade1 = flasher:CreateAnimation("Alpha");
 fade1:SetDuration(0.3);
-fade1:SetChange(1);
+fade1:SetFromAlpha(1);
 fade1:SetOrder(1);
 
 local fade2 = flasher:CreateAnimation("Alpha");
 fade2:SetDuration(0.3);
-fade2:SetChange(-1);
+fade2:SetToAlpha(-1);
 fade2:SetOrder(2);
 
 -- 
@@ -202,6 +202,7 @@ function StealthAlerterCommand(command)
    elseif (argc == 1) and (argv[1] == "flash") then
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will flash the screen for hostile actions, type \"/sal noflash\" to turn it off.", 0.0, 0.85, 0.0);
       StealthAlerterFlash = true;
+      flasher:Play(); 
    elseif (argc == 1) and (argv[1] == "noflash") then
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will not flash the screen for hostile actions, type \"/sal flash\" to turn it on.", 0.0, 0.85, 0.0);
       StealthAlerterFlash = false;
@@ -214,7 +215,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.24 (September 7, 2015)";   -- Version number.
+   StealthAlerterVersion = "0.99.25 (July 31, 2016)";   -- Version number.
 
    --
    -- Register a command handler.
