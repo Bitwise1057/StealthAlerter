@@ -1,6 +1,6 @@
 local StealthAlerterMyEnemiesTable = nil;
-local StealthAlerterAllianceTable = {"Draenei", "Dwarf", "Human", "Gnome", "NightElf", "Worgen"};
-local StealthAlerterHordeTable = {"BloodElf", "Orc", "Troll", "Tauren", "Undead", "Goblin"};
+local StealthAlerterAllianceTable = {"DarkIronDwarf", "Draenei", "Dwarf", "Human", "Gnome", "KulTiran", "LightforgedDraenei", "NightElf", "VoidElf", "Worgen"};
+local StealthAlerterHordeTable = {"BloodElf", "Goblin", "HighmountainTauren", "MagharOrc", "Nightborne", "Orc", "Troll", "Tauren", "Undead", "ZandalariTroll"};
 
 --
 -- Search a table.
@@ -167,7 +167,7 @@ end -- local function ShowHelp()
 --
 -- Handle slash commands.
 --
-function StealthAlerterCommand(command)
+local function StealthAlerterCommand(command)
    local argc, argv = 0, {};
    gsub(command, "[^%s]+", function (word) argc=argc+1; argv[argc]=word; end);
 
@@ -215,7 +215,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.25 (July 31, 2016)";   -- Version number.
+   StealthAlerterVersion = "0.99.26 (July 20, 2018)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -223,6 +223,10 @@ function StealthAlerterOnLoad()
    SlashCmdList["STEALTHALERTERCMD"] = StealthAlerterCommand;
    SLASH_STEALTHALERTERCMD1 = "/sal";
    SLASH_STEALTHALERTERCMD2 = "/stealthalerter";
+
+   if StealthAlerterEnabled == false then
+      return;
+   end
    
    if StealthAlerterEnabled == nil then
       StealthAlerterEnabled = true;
@@ -267,19 +271,24 @@ function StealthAlerterOnLoad()
 end -- function StealthAlerterOnLoad()
 
 -- 
--- Handle the events we've registered, print messages and do stuff.
+-- Handle the event we've registered.
 --
 function StealthAlerterOnEvent(event, ...)
-   local timestamp, type, hideCaster, sourceGUID, sourceName, sourceFlags, mysteryArgument, destGUID, destName, destFlags, anotherMysteryArgument, spellId, spellName = select(1, ...)
 
-   if StealthAlerterEnabled == false then
-      return;
+   if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
+      StealthAlerterCombatLogTriggers(CombatLogGetCurrentEventInfo())
    end
+end -- function StealthAlerterOnEvent()
+
+-- 
+-- Print messages and do stuff.
+--
+function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, ...)
 
    --
    -- Look for interesting SPELL_CAST_SUCCESS events.
    --
-   if event == "COMBAT_LOG_EVENT_UNFILTERED" and type == "SPELL_CAST_SUCCESS" then
+   if event == "SPELL_CAST_SUCCESS" then
       --
       -- Enable for verbose logging.  Probably a bad idea.
       --
@@ -401,29 +410,6 @@ function StealthAlerterOnEvent(event, ...)
 	    end
 	 end
       --
-      -- Detect Hunters casting Camouflage.
-      --
-      elseif spellId == 51753 then
-         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
-         local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
-
-	 if IsHostile ~= nil and IsHostile then 
-            if StealthAlerterTerse then
-               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Camouflage.", 1.0, 0.25, 0.25);
-            else
-	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Camouflage (60 seconds).", 1.0, 0.25, 0.25);
-	    end
-            if StealthAlerterFlash then
-               flasher:Play(); 
-            end
-	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
-            if StealthAlerterTerse then
-               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Camouflage.", 0.41, 0.8, 0.94);
-            else
-	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Camouflage (60 seconds).", 0.41, 0.8, 0.94);
-	    end
-	 end
-      --
       -- Detect Mages casting Invisibility.
       --
       elseif spellId == 66 then
@@ -493,7 +479,7 @@ function StealthAlerterOnEvent(event, ...)
 	    end
 	 end
       --
-      -- Detect Invisibility potions.
+      -- Detect all sorts of invisibility potions.
       --
       elseif spellId == 3680 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
@@ -535,6 +521,9 @@ function StealthAlerterOnEvent(event, ...)
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used an Invisibility Potion (18 seconds).", 0.41, 0.8, 0.94);
 	    end
 	 end
+      --
+      -- Draenic Invisibility Potion and Commander's Draenic Invisibility Potion
+      -- 
       elseif spellId == 175833 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
          local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
@@ -555,6 +544,29 @@ function StealthAlerterOnEvent(event, ...)
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Draenic Invisibility Potion (18 seconds).", 0.41, 0.8, 0.94);
 	    end
 	 end
+      --
+      -- Potion of Minor Invisibility and Potion of Trivial Invisibility
+      --
+      elseif spellId == 216805 then
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+         local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
+
+	 if IsHostile ~= nil and IsHostile then 
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of Trivial Invisibility.", 1.0, 0.25, 0.25); 
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of Trivial Invisibility (6 seconds).", 1.0, 0.25, 0.25);
+	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of Trivial Invisibility.", 0.41, 0.8, 0.94);
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of Trivial Invisibility (6 seconds).", 0.41, 0.8, 0.94);
+	    end
+	 end
       end
    end
-end -- function StealthAlerterOnEvent()
+end -- function StealthAlerterCombatLogTriggers()
