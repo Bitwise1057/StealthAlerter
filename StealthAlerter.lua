@@ -215,7 +215,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.26 (July 20, 2018)";   -- Version number.
+   StealthAlerterVersion = "0.99.27 (July 28, 2018)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -409,6 +409,29 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Shadowmeld.", 0.41, 0.8, 0.94);
 	    end
 	 end
+      --
+      -- Detect Hunters casting Camouflage.
+      --
+      elseif spellId == 199483 then
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+         local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
+
+         if IsHostile ~= nil and IsHostile then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Camouflage.", 1.0, 0.25, 0.25);
+            else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Camouflage (60 seconds).", 1.0, 0.25, 0.25);
+            end
+            if StealthAlerterFlash then
+               flasher:Play();
+            end
+         elseif IsHostile ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Camouflage.", 0.41, 0.8, 0.94);
+            else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Camouflage (60 seconds).", 0.41, 0.8, 0.94);
+            end
+         end
       --
       -- Detect Mages casting Invisibility.
       --
