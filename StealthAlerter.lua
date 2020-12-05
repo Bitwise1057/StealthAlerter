@@ -215,7 +215,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.28 (November 2, 2020)";   -- Version number.
+   StealthAlerterVersion = "0.99.29 (November 30, 2020)";   -- Version number.
 
    --
    -- Register a command handler.
