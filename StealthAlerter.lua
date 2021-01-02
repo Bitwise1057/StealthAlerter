@@ -215,7 +215,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.29 (November 30, 2020)";   -- Version number.
+   StealthAlerterVersion = "0.99.30 (January 1, 2021)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -374,7 +374,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl.", 1.0, 0.25, 0.25);
             else
-	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Prowl (speed reduced by 30%).", 1.0, 0.25, 0.25);
+	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Prowl.", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
                flasher:Play(); 
@@ -383,7 +383,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
             if StealthAlerterTerse then
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." cast Prowl.", 0.41, 0.8, 0.94);
 	    else
-               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Prowl (speed reduced by 30%).", 0.41, 0.8, 0.94);
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Prowl.", 0.41, 0.8, 0.94);
 	    end
 	 end
       --
@@ -542,6 +542,29 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used an Invisibility Potion.", 0.41, 0.8, 0.94);
 	    else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used an Invisibility Potion (18 seconds).", 0.41, 0.8, 0.94);
+	    end
+	 end
+      --
+      -- Potion of the Hidden Spirit
+      -- 
+      elseif spellId == 307195 then
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+         local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
+
+	 if IsHostile ~= nil and IsHostile then 
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of the Hidden Spirit.", 1.0, 0.25, 0.25); 
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hidden Spirit (18 seconds).", 1.0, 0.25, 0.25);
+	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of the Hidden Spirit.", 0.41, 0.8, 0.94);
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hidden Spirit (18 seconds).", 0.41, 0.8, 0.94);
 	    end
 	 end
       --
