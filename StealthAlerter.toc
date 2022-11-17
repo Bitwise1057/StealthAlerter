@@ -1,6 +1,6 @@
 ## Interface: 100002
 ## Title: Stealth Alerter
-## Version: 0.99.31
+## Version: 0.99.32
 ## Author: Suppression
 ## Notes: Stealth Alerter detects if someone uses a stealth ability.
 ## SavedVariablesPerCharacter: StealthAlerterEnabled, StealthAlerterDebug, StealthAlerterShowFriendly, StealthAlerterTerse, StealthAlerterFlash
