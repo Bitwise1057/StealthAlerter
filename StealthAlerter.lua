@@ -215,7 +215,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.34 (December 29, 2023)";   -- Version number.
+   StealthAlerterVersion = "0.99.35 (June 16, 2024)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -320,7 +320,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
       --
       -- Detect Rogues casting Stealth.
       --
-      elseif spellId == 1784 then 
+      elseif spellId == 1784 or spellId == 115191 then 
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
          local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
 
@@ -591,7 +591,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
 	    end
 	 end
       --
-      -- Potion of Minor Invisibility and Potion of Trivial Invisibility
+      -- Potion of Trivial Invisibility
       --
       elseif spellId == 216805 then
          local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
@@ -611,6 +611,75 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of Trivial Invisibility.", 0.41, 0.8, 0.94);
 	    else
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of Trivial Invisibility (6 seconds).", 0.41, 0.8, 0.94);
+	    end
+	 end
+      --
+      -- Potion of the Hushed Zephyr Bronze
+      --
+      elseif spellId == 371125 then
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+         local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
+
+	 if IsHostile ~= nil and IsHostile then 
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of the Hushed Zephyr.", 1.0, 0.25, 0.25); 
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hushed Zephyr (12 seconds).", 1.0, 0.25, 0.25);
+	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of the Hushed Zephyr.", 0.41, 0.8, 0.94);
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hushed Zephyr (12 seconds).", 0.41, 0.8, 0.94);
+	    end
+	 end
+      --
+      -- Potion of the Hushed Zephyr Silver
+      --
+      elseif spellId == 371133 then
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+         local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
+
+	 if IsHostile ~= nil and IsHostile then 
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of the Hushed Zephyr.", 1.0, 0.25, 0.25); 
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hushed Zephyr (15 seconds).", 1.0, 0.25, 0.25);
+	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of the Hushed Zephyr.", 0.41, 0.8, 0.94);
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hushed Zephyr (15 seconds).", 0.41, 0.8, 0.94);
+	    end
+	 end
+      --
+      -- Potion of the Hushed Zephyr Gold
+      --
+      elseif spellId == 371134 then
+         local class, classFilename, race, raceFilename, sex = GetPlayerInfoByGUID(sourceGUID);
+         local IsHostile = CheckFactionByGUID(sourceGUID, sourceName, raceFilename);
+
+	 if IsHostile ~= nil and IsHostile then 
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of the Hushed Zephyr.", 1.0, 0.25, 0.25); 
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hushed Zephyr (18 seconds).", 1.0, 0.25, 0.25);
+	    end
+            if StealthAlerterFlash then
+               flasher:Play(); 
+            end
+	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
+            if StealthAlerterTerse then
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " used a Potion of the Hushed Zephyr.", 0.41, 0.8, 0.94);
+	    else
+               DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hushed Zephyr (18 seconds).", 0.41, 0.8, 0.94);
 	    end
 	 end
       end
