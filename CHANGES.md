@@ -1,9 +1,9 @@
-# Version 0.99.36 2024/08/14
+## Version 0.99.36 2024/08/14
 
 * TOC update for 11.0.2.
 * Help wanted for known issue #6: the Ping System keybind for Ping displays a "Can't ping this." error.
 
-# Version 0.99.35 2024/06/16
+## Version 0.99.35 2024/06/16
 
 * TOC update for 10.2.7.
 * Added a second spellId for Stealth (Rogue).
@@ -11,14 +11,15 @@
 * Added Potion of the Hushed Zephyr.
 * Help wanted for known issue [#6: the Ping System keybind for Ping displays a "Can't ping this." error](https://legacy.curseforge.com/wow/addons/stealth-alerter/issues/6).
 
-Version 0.99.34 2023/12/29
+## Version 0.99.34 2023/12/29
 
-    TOC update for 10.2.0.
-    Help wanted for known issue #6: the Ping System keybind for Ping displays a "Can't ping this." error.
+* TOC update for 10.2.0.
+* Help wanted for known issue [#6: the Ping System keybind for Ping displays a "Can't ping this." error](https://legacy.curseforge.com/wow/addons/stealth-alerter/issues/6).
 
-Version 0.99.33 2023/05/03
-TOC update for 10.1.0.
-Added IconTexture.
+## Version 0.99.33 2023/05/03
+
+* TOC update for 10.1.0.
+* Added IconTexture.
 
 Version 0.99.32 2022/11/17
 File name fix.
