@@ -1,3 +1,8 @@
+### Version 0.99.38 2025-09-05
+* TOC update for 11.2.0.
+* Fixed known issue [#6: the Ping System keybind for Ping displays a "Can't ping this." error](https://legacy.curseforge.com/wow/addons/stealth-alerter/issues/6) thanks to VfX / Bitwise1057.
+* Cleanups by VfX / Bitwise1057.
+
 ### Version 0.99.37 2025-01-12
 * TOC update for 11.0.7.
 * Help wanted for known issue [#6: the Ping System keybind for Ping displays a "Can't ping this." error](https://legacy.curseforge.com/wow/addons/stealth-alerter/issues/6).

@@ -102,7 +102,7 @@ local function CheckFactionByGUID(GUID, Name, Race)
 end -- local function CheckFactionByGUID
 
 --
--- Create a frame for flashing.
+-- Create a frame for flashing (ping-safe). Original frame was encompassing the entire screen and visible permanently, this is no longer the case and is defaulted to hidden now. (VfX / Bitwise1057)
 --
 local f = CreateFrame("Frame", "salFrame", UIParent);
 f:SetAllPoints(true);
@@ -110,7 +110,7 @@ f:SetAlpha(0);
 f:SetToplevel(true);
 f:SetFrameStrata("BACKGROUND");
 f:EnableMouse(false);
---f:Hide();  -- The examples I found hide the frame, but it doesn't work for me.  Shrug.
+f:Hide();  -- keep it hidden until flash is needed
 
 --
 -- Set frame texture.
@@ -118,12 +118,11 @@ f:EnableMouse(false);
 local t = f:CreateTexture(nil,"BACKGROUND");
 t:SetAllPoints(true);
 t:SetBlendMode("ADD");
-t:SetTexture("Interface\\FullScreenTextures\\LowHealth");  -- A builtin red texture.
---t:SetTexture("Interface\\FullScreenTextures\\OutofControl");  -- A builtin blue texture.
+t:SetTexture("Interface\\FullScreenTextures\\LowHealth");
 f.texture = t;
 
 --
--- Make it flash.
+-- Flash Effect
 -- http://forums.wowace.com/showthread.php?t=20397
 --
 local flasher = f:CreateAnimationGroup();
@@ -137,6 +136,25 @@ local fade2 = flasher:CreateAnimation("Alpha");
 fade2:SetDuration(0.3);
 fade2:SetToAlpha(-1);
 fade2:SetOrder(2);
+
+-- Reset frame cleanly, Hide Frame, Prevent Stack Overflow recursion.
+flasher:SetScript("OnFinished", function()
+    f:Hide()
+    flasher:Stop() -- make sure the animation group is fully reset
+end)
+
+
+--
+-- Safe flash trigger (Replaced all original triggers with TriggerFlash();)
+-- This version of the trigger is REQUIRED for functionality as it displays the hidden frame which would otherwise break it.
+--
+local function TriggerFlash()
+   if StealthAlerterFlash then
+      f:Show();
+      flasher:Play()
+   end
+end
+
 
 -- 
 -- Show the help.
@@ -202,7 +220,7 @@ local function StealthAlerterCommand(command)
    elseif (argc == 1) and (argv[1] == "flash") then
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will flash the screen for hostile actions, type \"/sal noflash\" to turn it off.", 0.0, 0.85, 0.0);
       StealthAlerterFlash = true;
-      flasher:Play(); 
+      TriggerFlash(); 
    elseif (argc == 1) and (argv[1] == "noflash") then
       DEFAULT_CHAT_FRAME:AddMessage("Stealth Alerter will not flash the screen for hostile actions, type \"/sal flash\" to turn it on.", 0.0, 0.85, 0.0);
       StealthAlerterFlash = false;
@@ -215,7 +233,7 @@ end -- function StealthAlerterCommand()
 -- Do stuff when the Addon is loaded.
 --
 function StealthAlerterOnLoad()
-   StealthAlerterVersion = "0.99.37 (January 12, 2025)";   -- Version number.
+   StealthAlerterVersion = "0.99.38 (September 5, 2025)";   -- Version number.
 
    --
    -- Register a command handler.
@@ -308,7 +326,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Vanish (3 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -331,7 +349,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Stealth.", 1.0, 0.25, 0.25);
             end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -354,7 +372,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Shroud of Concealment (15 seconds).", 1.0, 0.25, 0.25);
             end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -377,7 +395,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Prowl.", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -400,7 +418,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Shadowmeld.", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -423,7 +441,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Camouflage (60 seconds).", 1.0, 0.25, 0.25);
             end
             if StealthAlerterFlash then
-               flasher:Play();
+               TriggerFlash();
             end
          elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -446,7 +464,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Invisibility (20 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -469,7 +487,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") cast Greater Invisibility (20 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -492,7 +510,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
 	       DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." ("..race..") used a Stealthman 54 device.", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -515,7 +533,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Lesser Invisibility Potion (15 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -535,7 +553,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used an Invisibility Potion (18 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -558,7 +576,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hidden Spirit (18 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -581,7 +599,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Draenic Invisibility Potion (18 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -604,7 +622,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of Trivial Invisibility (6 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -627,7 +645,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hushed Zephyr (12 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -650,7 +668,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hushed Zephyr (15 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -673,7 +691,7 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
                DEFAULT_CHAT_FRAME:AddMessage(""..sourceName .. " ("..race..") used a Potion of the Hushed Zephyr (18 seconds).", 1.0, 0.25, 0.25);
 	    end
             if StealthAlerterFlash then
-               flasher:Play(); 
+               TriggerFlash(); 
             end
 	 elseif IsHostile ~= nil and StealthAlerterShowFriendly then
             if StealthAlerterTerse then
@@ -685,3 +703,4 @@ function StealthAlerterCombatLogTriggers(timestamp, event, hideCaster, sourceGUI
       end
    end
 end -- function StealthAlerterCombatLogTriggers()
+
